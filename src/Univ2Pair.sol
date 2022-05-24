@@ -10,6 +10,7 @@ error IncorrectOutputAmount();
 error InsufficientLiquidity();
 error InvalidK();
 error TransferFailed();
+error AlreadyInitialized();
 
 contract Univ2Pair is ERC20 {
 
@@ -29,13 +30,17 @@ contract Univ2Pair is ERC20 {
     event Mint(address liquidityProvider, uint256 amountToken0, uint256 amountToken1);
     event Burn(address liquitidyProvider, uint256 amoutnToken0, uint256 amounttoken1);
 
-    constructor(address _token0, address _token1) ERC20 ("Uni token", "UNI"){
+    constructor() ERC20("Uni Token","UNI") {}
+    
+    function initialize(address token0_, address token1_) public {
 
-        require (_token0 != _token1, "Both tokens cannot be same");
-        require (_token0!=address(0) && _token1!=address(0), "Neither token can be 0 address");
+        if (token0 !=address(0) || token1!=address(0) ){
+            revert AlreadyInitialized();
 
-        token0=_token0;
-        token1=_token1;
+        }
+        token0=token0_;
+        token1=token1_;
+
     }
 
     function sqrt(uint256 y) internal pure returns (uint256 z) {
