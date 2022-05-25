@@ -28,7 +28,7 @@ contract Univ2Pair is ERC20 {
 
     uint256 public MINIMUM_LIQUIDITY=1000;
     event Mint(address liquidityProvider, uint256 amountToken0, uint256 amountToken1);
-    event Burn(address liquitidyProvider, uint256 amoutnToken0, uint256 amounttoken1);
+    event Burn(address liquitidyProvider, uint256 amoutnToken0, uint256 amounttoken1, address to);
 
     constructor() ERC20("Uni Token","UNI") {}
     
@@ -64,7 +64,7 @@ contract Univ2Pair is ERC20 {
         uint256 amount0 = balance0 - reserve0;
         uint256 amount1 = balance1 - reserve1;
 
-        uint256 liquidity=0;
+        liquidity=0;
 
         if(totalSupply() == 0){
 
@@ -115,26 +115,26 @@ contract Univ2Pair is ERC20 {
         reserve1=uint112(_balance1);
     }
 
-    function burn() public {
+    function burn(address to) public returns(uint256 amount0, uint256 amount1) {
 
         uint256 balance0= IERC20(token0).balanceOf(address(this));
         uint256 balance1= IERC20(token1).balanceOf(address(this));
 
-        uint256 liquidity = balanceOf(msg.sender);
+        uint256 liquidity = balanceOf(address(this));
 
-        uint256 amount0 = (liquidity*balance0)/totalSupply();
-        uint256 amount1 = (liquidity*balance1)/totalSupply();
+        amount0 = (liquidity*balance0)/totalSupply();
+        amount1 = (liquidity*balance1)/totalSupply();
 
-        _safeTransfer(token0, msg.sender,amount0);
-        _safeTransfer(token1, msg.sender,amount1);
-        _burn(msg.sender,liquidity);
+        _safeTransfer(token0, to, amount0);
+        _safeTransfer(token1, to, amount1);
+        _burn(address(this),liquidity);
 
         balance0= IERC20(token0).balanceOf(address(this));
         balance1= IERC20(token1).balanceOf(address(this));
         (uint112 reserve0_, uint112 reserve1_)=getReserves();
         _update(balance0,balance1,reserve0_,reserve1_);
 
-        emit Burn(msg.sender, amount0, amount1);
+        emit Burn(msg.sender, amount0, amount1, to);
 
     }
 
