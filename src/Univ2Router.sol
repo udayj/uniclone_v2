@@ -11,6 +11,7 @@ contract Univ2Router {
     error InsufficientAmount();
     error InsufficientOutputAmount();
     error InsufficientLiquidity();
+    error ExcessiveInputAmount();
 
     IUniv2Factory factory;
     constructor(address _factory) {
@@ -169,6 +170,33 @@ contract Univ2Router {
         );
 
         _swap(amounts,path, to);
+    }
+
+    function tokensForExactTokens(
+
+        uint256 amountOut,
+        uint256 amountInMax,
+        address[] calldata path,
+        address to
+    ) public returns(uint256[] memory amounts) {
+
+        amounts=Univ2Library.getAmountsIn(address(factory), amountOut, path);
+
+        if(amounts[0] > amountInMax)
+            revert ExcessiveInputAmount();
+
+        _safeTransferFrom(
+            path[0],
+            msg.sender,
+            Univ2Library.pairFor(
+                address(factory),
+                path[0],
+                path[1]
+            ),
+            amounts[0]
+        );
+
+        _swap(amounts,path,to);
     }
 
     function _swap(uint256[] memory amounts, address[] memory path, address to_) internal {
