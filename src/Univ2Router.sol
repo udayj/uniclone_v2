@@ -172,7 +172,7 @@ contract Univ2Router {
         _swap(amounts,path, to);
     }
 
-    function tokensForExactTokens(
+    function swapTokensForExactTokens(
 
         uint256 amountOut,
         uint256 amountInMax,

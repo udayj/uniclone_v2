@@ -91,7 +91,7 @@ contract Univ2Pair is ERC20 {
 
             uint32 timeElapsed = uint32(block.timestamp - blockTimestampLast);
 
-            if (timeElapsed>0 && reserve0_>0 && reserve1 >0) {
+            if (timeElapsed>0 && reserve0_>0 && reserve1_ >0) {
 
                 uint224 num1=UQ112.encode(reserve1_);
                 price0CumulativeLast += 
